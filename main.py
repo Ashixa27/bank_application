@@ -63,6 +63,7 @@ def account_balance(user: str, bank_path: str = "bank.json") -> str:
 
     return f"Your account is worth : {value} {currency}"
 
+# un comentariu aici
 
 def convert_account(user: str, to_currency: str, bank_path: str = "bank.json"):
     with open(bank_path, "r") as f:
