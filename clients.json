@@ -1,17 +1,22 @@
 {
-  "100": {
-      "name": "Vlad",
-      "telefon": "0716482365",
-      "oras" : "Bucharest"
-  },
-  "101": {
-      "name": "Bogdan",
-      "telefon": "0798423654",
-      "oras" : "Bucharest"
-  },
-  "102": {
-      "name": "Alexandra",
-      "telefon": "0713658495",
-      "oras" : "Bucharest"
-  }
+    "100": {
+        "name": "Vlad",
+        "telefon": "0713234524",
+        "oras": "Bucharest"
+    },
+    "101": {
+        "name": "Bogdan",
+        "telefon": "0713234526",
+        "oras": "Bucharest"
+    },
+    "102": {
+        "name": "Alexandra",
+        "telefon": "0713234523",
+        "oras": "Bucharest"
+    },
+    "103": {
+        "name": "Andrei",
+        "telefon": "0768952365",
+        "oras": "Sibiu"
+    }
 }
