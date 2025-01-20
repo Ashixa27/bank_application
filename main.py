@@ -7,25 +7,34 @@ import pwinput
 import admin_operations
 from getpass import getpass
 
+OKBLUE = '\033[94m'
+OKCYAN = '\033[96m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
 
-USER_MENU = """
+USER_MENU = f"""{OKCYAN}
 1. Sa ceara bank statement -> valoare contului
 2. Sa transfere unui alt utilizator
 3. Sa scoata bani din cont
 4. Sa adauge bani in cont
-5. Sa converteasca banii
+5. Sa converteasca banii{ENDC}{FAIL}
 6. Sign out
-7. Exit
+7. Exit{ENDC}
 
 Type in choice: """
 
-ADMIN_MENU = """
+ADMIN_MENU = f"""{OKCYAN}
 1. Sa se stearga clientul (admin-only)
-2. Sa adauge un client nou (admin-only)
-3. Sign out
-4. Show users
-5. Exit
-"""
+2. Sa adauge un client nou (admin-only){ENDC}{FAIL}
+3. Sign out{ENDC}{OKCYAN}
+4. Show users{ENDC}{FAIL}
+5. Exit{ENDC}
+
+Type in choice: """
 
 # ENVIRONMENT VARIABLE
 
@@ -43,13 +52,13 @@ def login(user: str, auth_path: str = "auth.json") -> str:
             credentials = json.loads(f.read())
 
         while user not in credentials:
-            print("User not found in database.")
+            print(f"{WARNING}User not found in database.{ENDC}")
             user = input("Type in user:")
 
         # passwd = pwinput.pwinput(prompt='PW: ', mask='*')
         passwd = input("Citeste parola: ")
         while passwd != credentials[user]:
-            passwd = input("Wrong password: ")
+            passwd = input(f"{WARNING}Wrong password: {ENDC}")
 
         return user
 
@@ -104,10 +113,10 @@ def transfer_money(sender: str, receiver: str, amount: int, bank_path: str = "ba
         with open(bank_path, "w") as f:
             f.write(json.dumps(accounts, indent=4))
 
-        print(f"Ati transferat cu succes! Cont curent: {accounts[sender]['value']} {accounts[sender]['currency']}")
+        print(f"{OKGREEN}Ati transferat cu succes! Cont curent: {accounts[sender]['value']} {accounts[sender]['currency']}{ENDC}")
 
     else:
-        print("Not enough money to send")
+        print(f"{WARNING}Not enough money to send{ENDC}")
 
 
 def get_username_by_phone(phone_number: str, clients_path: str = "clients.json"):
@@ -118,12 +127,34 @@ def get_username_by_phone(phone_number: str, clients_path: str = "clients.json")
         if details['telefon'] == phone_number:
             return user_id
 
-    print("Phone number not recognised!")
+    print(f"{WARNING}Phone number not recognised!{ENDC}")
     return None
 
 
+def deposit_money(user: str, amount: int, bank_path: str = "bank.json"):
+    with open(bank_path, "r") as f:
+        accounts = json.loads(f.read())
+
+    accounts[user]["value"] += amount
+    currency = accounts[user]["currency"]
+
+    with open(bank_path, "w") as f:
+        f.write(json.dumps(accounts, indent=4))
+
+    print(f"{OKGREEN}Ati depus {amount} {currency}.{ENDC}")
 
 
+def withdraw_money(user: str, amount: int, bank_path: str = "bank.json"):
+    with open(bank_path, "r") as f:
+        accounts = json.loads(f.read())
+
+    accounts[user]["value"] -= amount
+    currency = accounts[user]["currency"]
+
+    with open(bank_path, "w") as f:
+        f.write(json.dumps(accounts, indent=4))
+
+    print(f"{WARNING}Ati retras {amount} {currency}.{ENDC}")
 
 
 if __name__ == '__main__':
@@ -144,11 +175,12 @@ if __name__ == '__main__':
                     receiver_id = get_username_by_phone(phone_number)
                     if receiver_id:
                         transfer_money(username, receiver_id, amount)
-
                 case "3":
-                    pass
+                    amount = int(input("Ce suma vrei sa retragi? "))
+                    withdraw_money(username, amount)
                 case "4":
-                    pass
+                    amount = int(input("Ce suma vrei sa depui? "))
+                    deposit_money(username, amount)
                 case "5":
                     currency = input("Ce vrei sa transformi? ")
                     # verificati sa fie currency corect
@@ -170,9 +202,9 @@ if __name__ == '__main__':
                 case "1":
                     user_to_delete = input("Ce user doresti sa stergi? ")
                     admin_operations.remove_user(user_to_delete)
-
                 case "2":
-                    pass
+                    user_to_add = input("Ce user doresti sa adaugi? ")
+                    admin_operations.add_user(user_to_add)
                 case "3":
                     username = input("Citeste un nou user: ")
                     username = login(username)
